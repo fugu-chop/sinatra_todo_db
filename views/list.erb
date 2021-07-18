@@ -1,32 +1,30 @@
-<%# I've chosen not to use the 'complete' class as I prefer the functionality I've added to uncheck all %>
-<section id="todos">
+<section id="todos" class="<%= list_class(@list) %>">
+
   <header>
     <h2><%= @list[:name] %></h2>
     <ul>
       <li>
-        <form action="/lists/<%= @idx %>/complete_all" method="post">
-          <button class="check" type="submit"><%= session[:status] %> All</button>
+        <form action="/lists/<%= @list_id %>/complete_all" method="post">
+          <button class="check" type="submit">Complete All</button>
         </form>
       </li>
-    <%# Using an instance variables allows us to be more explicit about relation between the template and the app
-    the params[:id] field could be anything, or provided by the user %>
-      <li><a class='edit' href='/lists/<%= @idx %>/edit'>Edit List</a></li>
+      <li><a class="edit" href="/lists/<%= @list_id %>/edit">Edit List</a></li>
     </ul>
   </header>
 
   <ul>
     <% sort_todos(@list[:todos]) do |todo| %>
-    <%# When there is a ==, this means do not escape the HTML %>
-    <%# For some reason, Ruby does not allow conditionals within an argument of a method call%>
-    <%# The method call here is Erubis#escape_xml(string) %>
-    <%# We could also have used escape_xml(<%= ("class='complete'" if todo[:completed]) %>
-      <li <%== "class='complete'" if todo[:completed] %> >
-        <form action="/lists/<%= @idx %>/todos/<%= todo[:id] %>" method="post" class="check">
+      <% if todo[:completed] %>
+        <li class="complete">
+      <% else %>
+        <li>
+      <% end %>
+        <form action="/lists/<%= @list_id %>/todos/<%= todo[:id] %>" method="post" class="check">
           <input type="hidden" name="completed" value="<%= !todo[:completed] %>" />
           <button type="submit">Complete</button>
         </form>
         <h3><%= todo[:name] %></h3>
-        <form action="/lists/<%= @idx %>/todos/<%= todo[:id] %>/delete" method="post" class="delete">
+        <form action="/lists/<%= @list_id %>/todos/<%= todo[:id] %>/destroy" method="post" class="delete">
           <button type="submit">Delete</button>
         </form>
       </li>
@@ -34,13 +32,13 @@
   </ul>
 </section>
 
-<form action="/lists/<%= @idx %>/todos" method="post">
+<form action="/lists/<%= @list_id %>/todos" method="post">
   <dl>
     <dt>
-      <label for="todo">Enter a new item to do:</label>
+      <label for="todo">Enter a new todo item:</label>
     </dt>
     <dd>
-      <input name="todo" id="todo" placeholder="Something to do" type="text" value="<%= params[:todo] %>">
+    <input name="todo" placeholder="Something to do" type="text" value="<%= params[:todo] %>">
     </dd>
   </dl>
   <fieldset class="actions">
@@ -48,10 +46,6 @@
   </fieldset>
 </form>
 
-<%# This content_for block is from a Sinatra module. It allows us to conditionally %>
-<%# display items defined in our template, depending on what page is being visited %>
 <% content_for :header_links do %>
-  <div class='actions'>
-    <a class='list' href='/lists'>All lists</a>
-  </div>
+  <a class="list" href="/lists">All Lists</a>
 <% end %>

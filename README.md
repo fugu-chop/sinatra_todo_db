@@ -16,5 +16,6 @@ To get it running locally:
 5. If you need to reset the app (i.e. delete all information), please delete the associated cookie through your browser.
 
 ### Design Choices
+What was before handled simply by direct interaction with the `session` hash provided by Sinatra is now extracted into a separate class, `SessionPersistence`. Routes are still currently handled outside of this class, in the `main` scope.
 
 ### Challenges

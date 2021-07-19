@@ -67,7 +67,8 @@ def error_for_todo(name)
 end
 
 before do
-  @storage = DatabasePersistence.new
+  # logger is an object provided by Sinatra (Rack middleware)
+  @storage = DatabasePersistence.new(logger)
 end
 
 get '/' do

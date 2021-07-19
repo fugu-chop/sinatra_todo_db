@@ -1,23 +1,35 @@
-require "pg"
+# frozen_string_literal: true
+
+require 'pg'
+require 'pry'
 
 # Handle the session related commands. Routes are handled outside of this.
 class DatabasePersistence
   # We pass the session hash from Sinatra as an argument on instantiation.
-  def initialize
+  def initialize(logger)
     @db = PG.connect(dbname: 'todos')
+    @logger = logger
+  end
+
+  def query(statement, *params)
+    @logger.info("#{statement}: #{params}")
+    @db.exec_params(statement, params)
   end
 
   def find_list(id)
-    sql = "SELECT * FROM lists WHERE id = $1"
-    result = @db.exec_param(sql, [id])
+    sql = 'SELECT * FROM lists WHERE id = $1'
+    # splat operator captures id as an array
+    result = query(sql, id)
+    tuple = result.first
+    { id: tuple['id'].to_i, name: tuple['name'], todos: find_todos(id) }
   end
 
   def all_lists
-    sql = "SELECT * FROM lists;"
-    result = @db.exec(sql)
+    sql = 'SELECT * FROM lists;'
+    result = query(sql)
 
-    result.map do |tuple| 
-      {id: tuple["id"], name: tuple["name"], todos: []}
+    result.map do |tuple|
+      { id: tuple['id'].to_i, name: tuple['name'], todos: find_todos(tuple['id']) }
     end
   end
 
@@ -57,5 +69,22 @@ class DatabasePersistence
     # list[:todos].each do |todo|
     #   todo[:completed] = true
     # end
+  end
+
+  private
+
+  def convert_boolean(bool)
+    return true if bool == 't'
+    false
+  end
+
+  def find_todos(list_id)
+    sql = 'SELECT * FROM todos WHERE list_id = $1'
+    result = query(sql, list_id)
+    test_obj = result.map do |tuple|
+      { id: tuple['id'].to_i, name: tuple['name'], completed: convert_boolean(tuple['completed']) }
+    end
+
+    binding.pry
   end
 end

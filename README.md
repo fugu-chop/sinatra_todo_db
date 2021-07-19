@@ -16,6 +16,8 @@ To get it running locally:
 5. If you need to reset the app (i.e. delete all information), please delete the associated cookie through your browser.
 
 ### Design Choices
-What was before handled simply by direct interaction with the `session` hash provided by Sinatra is now extracted into a separate class, `SessionPersistence`. Routes are still currently handled outside of this class, in the `main` scope.
+What was before handled simply by direct interaction with the `session` hash provided by Sinatra is now extracted into a separate class, `DatabasePersistence`. Routes are still currently handled outside of this class, in the `main` scope.
+
+This application is a straight swap from using the `session` hash to using a database. All data structures were retained in the interest of making the transition easy.
 
 ### Challenges

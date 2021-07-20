@@ -10,6 +10,8 @@ configure do
   enable :sessions
   set :session_secret, 'secret'
   set :erb, escape_html: true
+  # Specify sinatra/reloader to reload another file as part of reload
+  also_reload "database_persistence.rb"
 end
 
 helpers do

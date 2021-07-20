@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'pg'
-require 'pry'
 
 # Handle the session related commands. Routes are handled outside of this.
 class DatabasePersistence
@@ -9,11 +8,6 @@ class DatabasePersistence
   def initialize(logger)
     @db = PG.connect(dbname: 'todos')
     @logger = logger
-  end
-
-  def query(statement, *params)
-    @logger.info("#{statement}: #{params}")
-    @db.exec_params(statement, params)
   end
 
   def find_list(id)
@@ -74,17 +68,19 @@ class DatabasePersistence
   private
 
   def convert_boolean(bool)
-    return true if bool == 't'
-    false
+    bool == 't'
   end
 
   def find_todos(list_id)
     sql = 'SELECT * FROM todos WHERE list_id = $1'
     result = query(sql, list_id)
-    test_obj = result.map do |tuple|
+    result.map do |tuple|
       { id: tuple['id'].to_i, name: tuple['name'], completed: convert_boolean(tuple['completed']) }
     end
+  end
 
-    binding.pry
+  def query(statement, *params)
+    @logger.info("#{statement}: #{params}")
+    @db.exec_params(statement, params)
   end
 end

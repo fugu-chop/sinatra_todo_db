@@ -7,7 +7,7 @@ class DatabasePersistence
   # We pass the session hash from Sinatra as an argument on instantiation.
   def initialize(logger)
     @db = if Sinatra::Base.production?
-            PG.connect(ENV['DATATBASE_URL'])
+            PG.connect(ENV['HEROKU_POSTGRESQL_NAVY_URL'])
           else
             PG.connect(dbname: 'todos')
           end

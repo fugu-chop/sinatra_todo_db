@@ -7,6 +7,8 @@ This is a Sinatra based To-Do app that allows users to create multiple lists, wh
 A layout was used to reduce the number of `.erb` view templates required. Most of the styling was provided as a CSS template file. 
 
 ### How to run
+This app can be found here: https://todo-list-db-dw.herokuapp.com/
+
 To get it running locally:
 1. Clone the repo locally
 2. Make sure you have the `bundle` gem installed.
@@ -18,6 +20,4 @@ To get it running locally:
 ### Design Choices
 What was before handled simply by direct interaction with the `session` hash provided by Sinatra is now extracted into a separate class, `DatabasePersistence`. Routes are still currently handled outside of this class, in the `main` scope.
 
-This application is a straight swap from using the `session` hash to using a database. All data structures were retained in the interest of making the transition easy.
-
-### Challenges
+This application is a straight swap from using the `session` hash to using a database. All data structures were retained in the interest of making the transition easy. The overall code is significantly easier to reason about - SQL statements are far easier and more uniform than array/hash manipulation across different methods.

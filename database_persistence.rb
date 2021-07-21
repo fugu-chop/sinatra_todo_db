@@ -66,6 +66,11 @@ class DatabasePersistence
     query(sql, list_id)
   end
 
+  # Guard rails to ensure we don't exceed connection limit on Heroku free database plan
+  def disconnect
+    @db.close
+  end
+  
   private
 
   def convert_boolean(bool)

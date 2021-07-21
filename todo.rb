@@ -76,6 +76,11 @@ before do
   @storage = DatabasePersistence.new(logger)
 end
 
+# Guard rails to ensure we don't exceed connection limit on Heroku free database plan
+after do
+  @storage.disconnect
+end
+
 get '/' do
   redirect '/lists'
 end

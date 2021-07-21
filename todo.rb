@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'sinatra'
-require 'sinatra/reloader' 
+require 'sinatra/reloader'
 require 'tilt/erubis'
 require_relative 'database_persistence'
 
@@ -11,10 +11,10 @@ configure do
   set :erb, escape_html: true
 end
 
-configure :development do 
+configure :development do
   require 'sinatra/content_for'
   # Specify sinatra/reloader to reload another file as part of reload
-  also_reload "database_persistence.rb"
+  also_reload 'database_persistence.rb'
 end
 
 helpers do

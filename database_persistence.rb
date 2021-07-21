@@ -23,7 +23,7 @@ class DatabasePersistence
   end
 
   def all_lists
-    sql = 'SELECT * FROM lists;'
+    sql = 'SELECT * FROM lists'
     result = query(sql)
 
     result.map do |tuple|
@@ -70,7 +70,7 @@ class DatabasePersistence
   def disconnect
     @db.close
   end
-  
+
   private
 
   def convert_boolean(bool)

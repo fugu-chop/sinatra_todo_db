@@ -19,7 +19,8 @@ end
 
 helpers do
   def list_complete?(list)
-    todos_count(list).positive? && todos_remaining_count(list).zero?
+    # todos_count(list).positive? && todos_remaining_count(list).zero?
+    list[:todos_count].positive? && list[:todos_remaining_count].zero?
   end
 
   def list_class(list)

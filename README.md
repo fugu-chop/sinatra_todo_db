@@ -20,4 +20,8 @@ To get it running locally:
 ### Design Choices
 What was before handled simply by direct interaction with the `session` hash provided by Sinatra is now extracted into a separate class, `DatabasePersistence`. Routes are still currently handled outside of this class, in the `main` scope.
 
-This application is a straight swap from using the `session` hash to using a database. All data structures were retained in the interest of making the transition easy. The overall code is significantly easier to reason about - SQL statements are far easier and more uniform than array/hash manipulation across different methods.
+This application is mostly a swap from using the `session` hash to using a database. Data structures were retained in the interest of making the transition easy. The overall code is significantly easier to reason about - SQL statements are far easier and more uniform than array/hash manipulation across different methods.
+
+I also moved some methods from the application code to the database code - SQL feels more efficient in respect of aggregating data, and reducing the number of queries that need to be made (i.e. reducing `n+1` queries) when fetching to-dos for display - there is now only a single database query, instead of `n+1` queries, where `n` is the number of lists or to-dos being displayed.
+
+The trade-off is that there is some duplication in respect of the SQL being executed. I'm happy with this for now - I'm aware that there are other frameworks/tools that work at a higher level of abstraction to conditionally add statements to SQL queries, but I'm not going to focus on those for now.

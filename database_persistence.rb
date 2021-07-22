@@ -15,11 +15,20 @@ class DatabasePersistence
   end
 
   def find_list(id)
-    sql = 'SELECT * FROM lists WHERE id = $1'
-    # splat operator captures id as an array
+    sql = <<~query
+        SELECT l.*,
+             COUNT(NULLIF(t.completed, true)) AS todos_remaining_count,
+             COUNT(t.id) AS todos_count
+        FROM lists AS l
+        LEFT JOIN todos AS t
+          ON l.id = t.list_id
+        WHERE l.id = $1
+        GROUP BY l.id
+        ORDER BY l.id;
+    query
     result = query(sql, id)
     tuple = result.first
-    { id: tuple['id'].to_i, name: tuple['name'], todos: find_todos(id) }
+    tuple_to_list_hash(tuple)
   end
 
   def all_lists
@@ -36,11 +45,7 @@ class DatabasePersistence
     result = query(sql)
 
     result.map do |tuple|
-      { id: tuple['id'].to_i, 
-        name: tuple['name'], 
-        todos_count: tuple['todos_count'].to_i, 
-        todos_remaining_count: tuple['todos_remaining_count'].to_i
-      }
+      tuple_to_list_hash(tuple)
     end
   end
 
@@ -84,12 +89,6 @@ class DatabasePersistence
     @db.close
   end
 
-  private
-
-  def convert_boolean(bool)
-    bool == 't'
-  end
-
   def find_todos(list_id)
     sql = 'SELECT * FROM todos WHERE list_id = $1'
     result = query(sql, list_id)
@@ -98,8 +97,23 @@ class DatabasePersistence
     end
   end
 
+  private
+
+  def convert_boolean(bool)
+    bool == 't'
+  end
+
+  # splat operator creates an array
   def query(statement, *params)
     @logger.info("#{statement}: #{params}")
     @db.exec_params(statement, params)
+  end
+
+  def tuple_to_list_hash(tuple)
+    { id: tuple['id'].to_i, 
+      name: tuple['name'], 
+      todos_count: tuple['todos_count'].to_i, 
+      todos_remaining_count: tuple['todos_remaining_count'].to_i
+    }
   end
 end
